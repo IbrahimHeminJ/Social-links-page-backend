@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Resources;
+
+use App\Http\Resources\User\ThemeResource;
+use App\Models\UserPage;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class UserReasource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'data' => [
+                'name' => $this->name,
+                'username' => $this->username,
+                'email' => $this->email,
+                'profile_image' => $this->profile_image,
+                'phone_no' => $this->phone_no,
+                'tags' => TagReasource::collection($this->tags),
+                'role' => $this->when(
+                    $request->route()->getName() === 'auth.user',
+                    $this->role,
+                ),
+                'theme' => new ThemeResource(UserPage::with('themePreset')->where('user_id', $request->user()->id)->first()),
+            ],
+        ];
+    }
+}
