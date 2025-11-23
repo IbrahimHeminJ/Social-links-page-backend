@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
     Route::post('/register', 'register');
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'expaired_date'])->group(function () {
         Route::get('/user', 'user')->name('auth.user');
         Route::post('/user/update', 'update')->name('auth.user.update');
         Route::post('/logout', 'logout');

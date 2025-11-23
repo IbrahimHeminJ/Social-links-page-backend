@@ -5,7 +5,7 @@ use App\Http\Controllers\API\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware('auth:sanctum')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth:sanctum', 'expaired_date'])->prefix('admin')->name('admin.')->group(function () {
     Route::controller(UserController::class)->prefix('users')->name('users.')->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show')->name('show');
