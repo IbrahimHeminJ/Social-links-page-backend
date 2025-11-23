@@ -24,8 +24,6 @@ class ReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'report_status' => 'required|boolean',
-            'handled_by' => 'required|exists:users,id',
             'reason_of_action' => 'required|string',
         ];
     }

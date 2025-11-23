@@ -17,7 +17,6 @@ class ReportController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'report_type' => $request->report_type,
-            'reason_of_action' => $request->reason_of_action,
         ]);
         return $this->success(
             'Report created successfully', 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\Admin\ReportRequest;
 use App\Http\Resources\Admin\ReportResource;
 use App\Http\Resources\CollectionResource;
 use App\Models\Report;
@@ -32,14 +33,18 @@ class ReportController extends Controller
             ReportResource::collection(new CollectionResource($reports))
         );
     }
-
-    public function update(Request $request, $id)
+    public function store(ReportRequest $request, $id)
     {
         $report = Report::findOrFail($id);
-        $report->update($request->all());
+        $report->update([
+            'report_status' => true,
+            'handled_by' => $request->user()->id,
+            'reason_of_action' => $request->reason_of_action,
+        ]);
         return $this->success(
-            'Report updated successfully',
-            new ReportResource($report)
+            'Report handled successfully',
+            null,
+            200
         );
     }
 }
