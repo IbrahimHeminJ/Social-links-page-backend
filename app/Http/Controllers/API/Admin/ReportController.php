@@ -14,11 +14,32 @@ class ReportController extends Controller
     {
         $reports = Report::query()->
         with('user','reportedOnUser')
-        ->where('report_status',false)
+        ->where('report_status',true)
         ->get();
         return $this->success(
             'Reports fetched successfully',
             ReportResource::collection(new CollectionResource($reports))
+        );
+    }
+    public function getResolvedReports()
+    {
+        $reports = Report::query()->
+        with('user','reportedOnUser')
+        ->where('report_status',false)
+        ->get();
+        return $this->success(
+            'Resolved reports fetched successfully',
+            ReportResource::collection(new CollectionResource($reports))
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $report = Report::findOrFail($id);
+        $report->update($request->all());
+        return $this->success(
+            'Report updated successfully',
+            new ReportResource($report)
         );
     }
 }

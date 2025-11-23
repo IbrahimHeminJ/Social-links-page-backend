@@ -7,11 +7,14 @@ use App\Http\Resources\UserReasource;
 use App\Models\ThemePreset;
 use App\Models\User;
 use App\Models\UserPage;
+use App\Trait\ImageUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log ; 
 
 class AuthController extends Controller
 {
+    use ImageUpload;
     public function user(Request $request){
         return $this->success(
             'User fetched successfully', 
@@ -20,20 +23,26 @@ class AuthController extends Controller
     }
     public function update(Request $request)
     {
-        $userId = $request->route('id');
-        $user = User::findOrFail($userId);
+        $user = $request->user();
         $validated = $request->validate([
             'name' => 'required',
-            'username' => 'required|unique:users',
-            'email' => 'required|email|unique:users,email,' . $user->id.',id',
+            'username' => 'required|unique:users,username,' . $user->id . ',id',
+            'email' => 'required|email|unique:users,email,' . $user->id . ',id',
             'phone_no' => 'required|digits:11',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'tags' => 'required|array',
             'tags.*' => 'exists:tags,id',
         ]);
-        $user = $request->user();
+        
+        if ($request->hasFile('profile_image')) {
+            // Delete old image and upload new one
+            $validated['profile_image'] = $this->updateImage($request, 'profile_image', 'users', $user->profile_image);
+        } else {
+            unset($validated['profile_image']);
+        }
+        
         $user->update($validated);
-        $user->tags()->attach($validated['tags']);
+        $user->tags()->sync($validated['tags']);
         return $this->success(
             'User updated successfully',
             new UserReasource($user)
@@ -82,6 +91,10 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'theme_id' => ThemePreset::first()->id,
         ]);
+        if ($request->hasFile('profile_image')) {
+            $user->profile_image = $this->uploadImage($request, 'profile_image', 'users');
+            $user->save();
+        }
         $user->tags()->attach($validated['tags']);
 
         $token = $user->createToken('auth_token '.$user->id, ['*'], now()->addMonth())->plainTextToken;
@@ -90,11 +103,10 @@ class AuthController extends Controller
             [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => new UserReasource($user),
+                'user' => new UserReasource($user->load('tags')),
             ],
             200
-        );
-        
+        );   
     }
     public function logout(Request $request)
     {

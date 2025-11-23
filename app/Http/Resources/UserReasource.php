@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\User\ThemeResource;
-use App\Models\UserPage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,7 +28,10 @@ class UserReasource extends JsonResource
                     $request->route()->getName() === 'auth.user',
                     $this->role,
                 ),
-                'theme' => new ThemeResource(UserPage::with('themePreset')->where('user_id', $request->user()->id)->first()),
+                'theme' => $this->when(
+                    $this->userPage,
+                    new ThemeResource($this->userPage->load('themePreset'))
+                ),
             ],
         ];
     }

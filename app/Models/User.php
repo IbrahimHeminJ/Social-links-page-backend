@@ -58,7 +58,7 @@ class User extends Authenticatable
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'user_tags')->withTimestamps()->withPivot('user_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'user_tags')->withTimestamps();
     }
     public function userButtons(): HasMany
     {

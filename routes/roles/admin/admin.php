@@ -15,5 +15,6 @@ Route::middleware('auth:sanctum')->prefix('admin')->name('admin.')->group(functi
     });
     Route::controller(ReportController::class)->prefix('reports')->name('reports.')->group(function () {
         Route::get('/show', 'getShowReports');
+        Route::get('/resolved', 'getResolvedReports');
     });
 });
