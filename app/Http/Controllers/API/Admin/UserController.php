@@ -12,9 +12,20 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::query()->paginate(10);
+        $query = User::query();
+        
+        // Search by name or username
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('username', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $users = $query->paginate(10);
         return $this->success(
             'Users fetched successfully', 
             UserResource::collection( new CollectionResource($users))

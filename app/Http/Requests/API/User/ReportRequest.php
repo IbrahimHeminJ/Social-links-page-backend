@@ -25,7 +25,7 @@ class ReportRequest extends FormRequest
             'title' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id',
             'description' => 'required|string',
-            'report_type' => 'required|string|in:spam_scam_phishing,impersonation_identity_theft,inappropriate_offensive_content,intellectual_property_infringement,fake_identity',
+            'report_type' => 'required|string|in:spam_scam_phishing,impersonation_identity_theft,inappropriate_offensive_content,intellectual_property_infringement,fake_identity,other',
         ];
     }
 }
