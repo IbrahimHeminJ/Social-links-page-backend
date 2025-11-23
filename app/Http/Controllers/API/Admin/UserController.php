@@ -41,7 +41,7 @@ class UserController extends Controller
     }
     public function update(userUpdateRequest $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::query()->find($id);
         if(!$user){
             return $this->error('User not found', 404);
         }
@@ -53,7 +53,7 @@ class UserController extends Controller
     }
     public function destroy($id)
     {
-        $user = User::query()->findOrFail($id);
+        $user = User::query()->find($id);
         if(!$user){
             return $this->error('User not found', 404);
         }

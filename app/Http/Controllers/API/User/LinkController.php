@@ -27,7 +27,7 @@ class LinkController extends Controller
     }
     public function show($id)
     {
-        $link = UserButton::findOrFail($id);
+        $link = UserButton::find($id);
         if(!$link){
             return $this->error('Link not found', 404);
         }
@@ -71,7 +71,10 @@ class LinkController extends Controller
     }
     public function update(LinkButtonStoreRequest $request, $id)
     {
-        $link = UserButton::with('buttonLink')->findOrFail($id);
+        $link = UserButton::with('buttonLink')->find($id);
+        if(!$link){
+            return $this->error('Link not found', 404);
+        }
         
         // Check if domain is blocked (if link is being updated)
         if (isset($request->validated()['link'])) {
@@ -96,7 +99,10 @@ class LinkController extends Controller
 
     public function destroy($id)
     {
-        $link = UserButton::findOrFail($id);
+        $link = UserButton::find($id);
+        if(!$link){
+            return $this->error('Link not found', 404);
+        }
         $link->delete();
         return $this->success(
             'Link deleted successfully',

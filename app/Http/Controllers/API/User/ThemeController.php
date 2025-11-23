@@ -8,7 +8,6 @@ use App\Http\Resources\CollectionResource;
 use App\Http\Resources\User\ThemeResource;
 use App\Models\ThemePreset;
 use App\Models\UserPage;
-use Illuminate\Http\Request;
 
 class ThemeController extends Controller
 {
@@ -22,7 +21,10 @@ class ThemeController extends Controller
     }
     public function update(ThemUpdateRequest $request, $id)
     {
-        $userPage = auth()->user()->userPage()->findOrFail($id);
+        $userPage = auth()->user()->userPage()->find($id);
+        if(!$userPage){
+            return $this->error('User page not found', 404);
+        }
         $userPage->update($request->validated());
         return $this->success(
             'Theme updated successfully',
@@ -31,7 +33,10 @@ class ThemeController extends Controller
     }
     public function destroy($id)
     {
-        $userPage = UserPage::findOrFail($id);
+        $userPage = UserPage::find($id);
+        if(!$userPage){
+            return $this->error('User page not found', 404);
+        }
         $userPage->delete();
         return $this->success(
             'Theme deleted successfully',
