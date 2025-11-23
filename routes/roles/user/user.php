@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\User\ReportController;
 use App\Http\Controllers\API\User\LinkController;
 use App\Http\Controllers\API\User\ThemeController;
 use Illuminate\Support\Facades\Route;
@@ -18,4 +19,5 @@ Route::middleware(['auth:sanctum', 'expaired_date', 'role:user,admin'])->prefix(
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
+    Route::post('/report', [ReportController::class, 'store']);
 });
