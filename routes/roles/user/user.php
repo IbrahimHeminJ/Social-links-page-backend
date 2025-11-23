@@ -5,7 +5,7 @@ use App\Http\Controllers\API\User\ThemeController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware(['auth:sanctum', 'expaired_date'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth:sanctum', 'expaired_date', 'role:user,admin'])->prefix('user')->name('user.')->group(function () {
     Route::controller(LinkController::class)->prefix('links')->name('links.')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');

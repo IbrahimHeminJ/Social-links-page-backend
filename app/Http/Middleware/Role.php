@@ -13,8 +13,15 @@ class Role
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
+        $user = $request->user();
+        if(!in_array($user->role, $roles)){
+            return response()->json([
+                'message' => 'Unauthorized',
+                'status' => 403,
+            ], 403);
+        }
         return $next($request);
     }
 }
