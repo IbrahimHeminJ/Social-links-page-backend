@@ -3,6 +3,8 @@
 namespace App\Http\Resources\Admin;
 
 use App\Http\Resources\TagReasource;
+use App\Http\Resources\User\ThemeResource;
+use App\Models\UserPage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +28,9 @@ class UserResource extends JsonResource
                 'tags' => TagReasource::collection($this->tags),
                 'role' => $this->role,
             ],
+            'theme'=>[
+                'page_theme'=> UserPage::where('user_id', $this->id)->first()->themePreset->theme_type,
+            ]
         ];
     }
 }

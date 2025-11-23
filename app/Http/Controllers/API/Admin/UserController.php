@@ -7,7 +7,9 @@ use App\Http\Requests\API\Admin\userStoreRequest;
 use App\Http\Requests\API\Admin\userUpdateRequest;
 use App\Http\Resources\Admin\UserResource; 
 use App\Http\Resources\CollectionResource;
+use App\Http\Resources\User\UserButtonResource;
 use App\Models\User;
+use App\Models\UserButton;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -31,6 +33,14 @@ class UserController extends Controller
             UserResource::collection( new CollectionResource($users))
         );
     } 
+    public function show($id)
+    {
+        $userButton = UserButton::query()->where('user_id', $id)->get();
+        return $this->success(
+            'User button fetched successfully', 
+            UserButtonResource::collection($userButton)
+        );
+    }
     public function store(userStoreRequest $request)
     {
         $user = User::create($request->validated());
