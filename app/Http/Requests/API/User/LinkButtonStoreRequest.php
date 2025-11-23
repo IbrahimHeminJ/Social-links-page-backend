@@ -4,7 +4,7 @@ namespace App\Http\Requests\API\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LinkButtonRequest extends FormRequest
+class LinkButtonStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,10 @@ class LinkButtonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'button_id' => 'required|exists:button_links,id',
-            'order' => 'required|integer',
-            'link.title' => 'required|string',
-            'link.description' => 'nullable|string',
-            'link.icon' => 'nullable|string',
-            'link.link' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string',
+            'link' => 'required|string',
         ];
     }
 }
