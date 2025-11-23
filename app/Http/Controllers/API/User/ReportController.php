@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\User\ReportRequest;
 use App\Models\Report;
-use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {

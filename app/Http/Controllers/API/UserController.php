@@ -15,12 +15,28 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         
-        $tags = Tag::query()->with('users')
-        ->where('tag', 'like', '%' . $search . '%')
-        ->whereHas('users', function($query){ 
-            $query->where('is_deleted',false);
-        })
-        ->get()->groupBy('tag');
+        $query = Tag::query()->with('users')
+            ->whereHas('users', function($query) { 
+                $query->where('is_deleted', false);
+            });
+        
+        // Search by tag name, user name, or username
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                // Search by tag name
+                $q->where('tag', 'like', '%' . $search . '%')
+                  // OR search by user name or username
+                  ->orWhereHas('users', function($userQuery) use ($search) {
+                      $userQuery->where('is_deleted', false)
+                                ->where(function($uq) use ($search) {
+                                    $uq->where('name', 'like', '%' . $search . '%')
+                                       ->orWhere('username', 'like', '%' . $search . '%');
+                                });
+                  });
+            });
+        }
+        
+        $tags = $query->get()->groupBy('tag');
         return $this->success(
             'Tags fetched successfully',
             $tags

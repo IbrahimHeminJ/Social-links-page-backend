@@ -28,6 +28,9 @@ class LinkController extends Controller
     public function show($id)
     {
         $link = UserButton::findOrFail($id);
+        if(!$link){
+            return $this->error('Link not found', 404);
+        }
         return $this->success(
             'Link fetched successfully',
             UserButtonResource::collection(new CollectionResource($link))
