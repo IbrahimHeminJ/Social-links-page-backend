@@ -19,15 +19,7 @@ class UserController extends Controller
             'Users fetched successfully', 
             UserResource::collection( new CollectionResource($users))
         );
-    }
-    public function show($id)
-    {
-        $user = User::findOrFail($id);
-        return $this->success(
-            'User fetched successfully', 
-            new UserResource($user)
-        );
-    }
+    } 
     public function store(userStoreRequest $request)
     {
         $user = User::create($request->validated());
