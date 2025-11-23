@@ -50,18 +50,36 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
+        // Detect if input is email or username
+        $loginField = filter_var($request->input('userCredential'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // Validate based on detected field
         $validated = $request->validate([
-            'email' => 'required|email',
+            'userCredential' => 'required',
             'password' => 'required',
         ]);
-        
-        
-        if (!Auth::attempt($validated)) {
+
+        // Prepare credentials
+        $credentials = [
+            $loginField => $validated['userCredential'],
+            'password' => $validated['password'],
+        ];
+
+        // Attempt login
+        if (!Auth::attempt($credentials)) {
             return $this->error('Invalid credentials', 401);
         }
-        
-        $user = User::where('email', $validated['email'])->first();
-        $token = $user->createToken('auth_token '.$user->id, ['*'], now()->addMonth())->plainTextToken;
+
+        // Get user
+        $user = User::where($loginField, $validated['userCredential'])->first();
+
+        // Token
+        $token = $user->createToken(
+            'auth_token '.$user->id,
+            ['*'],
+            now()->addMonth()
+        )->plainTextToken;
+
         return $this->success(
             'Login successful',
             [
@@ -72,7 +90,6 @@ class AuthController extends Controller
             200
         );
     }
-
     public function register(Request $request)
     {
         $validated = $request->validate([
