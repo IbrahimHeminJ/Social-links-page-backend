@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CollectionResource;
+use App\Http\Resources\TagReasource;
 use App\Http\Resources\User\UserButtonResource; 
 use App\Models\Tag;
 use App\Models\UserButton; 
@@ -11,6 +12,14 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function getTags()
+    {
+        $tags = Tag::select('id', 'tag')->get();
+        return $this->success(
+            'Tags fetched successfully',
+            $tags
+        );
+    }
     public function index(Request $request)
     {
         $search = $request->input('search');
