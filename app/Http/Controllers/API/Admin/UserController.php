@@ -30,7 +30,7 @@ class UserController extends Controller
         $users = $query->paginate(10);
         return $this->success(
             'Users fetched successfully', 
-            UserResource::collection( new CollectionResource($users))
+            new CollectionResource(UserResource::collection($users))
         );
     } 
     public function store(userStoreRequest $request)

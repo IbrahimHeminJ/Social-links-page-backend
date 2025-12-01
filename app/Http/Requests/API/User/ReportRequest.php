@@ -23,7 +23,15 @@ class ReportRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => [
+                'required',
+                'exists:users,id',
+                function ($attribute, $value, $fail) {
+                    if ($value == $this->user()->id) {
+                        $fail('You cannot report yourself.');
+                    }
+                },
+            ],
             'description' => 'required|string',
             'report_type' => 'required|string|in:spam_scam_phishing,impersonation_identity_theft,inappropriate_offensive_content,intellectual_property_infringement,fake_identity,other',
         ];
