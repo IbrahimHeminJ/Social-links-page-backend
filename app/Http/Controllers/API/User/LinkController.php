@@ -95,7 +95,7 @@ class LinkController extends Controller
 
     public function destroy($id)
     {
-        $link = UserButton::findOrFail($id);
+        $link = ButtonLink::findOrFail($id);
         $link->delete();
         return $this->success(
             'Link deleted successfully',
