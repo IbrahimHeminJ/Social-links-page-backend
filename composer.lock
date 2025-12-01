@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c53df76edfe5fe56a83f9144d6c7dca",
+    "content-hash": "80dfaa35007a5e44515a56ace5001b7a",
     "packages": [
         {
             "name": "brick/math",
@@ -3529,6 +3529,59 @@
                 "source": "https://github.com/ramsey/uuid/tree/4.9.1"
             },
             "time": "2025-09-04T20:59:21+00:00"
+        },
+        {
+            "name": "rawahamid/laravel-fib-integration",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rawahamid/laravel-fib-integration.git",
+                "reference": "740491f92208fe26640905fa415bc752d4d259e5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rawahamid/laravel-fib-integration/zipball/740491f92208fe26640905fa415bc752d4d259e5",
+                "reference": "740491f92208fe26640905fa415bc752d4d259e5",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=8.0",
+                "php": ">=7.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rawahamid\\FibIntegration\\FibIntegrationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rawahamid\\FibIntegration\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rawa Hamid",
+                    "email": "rawahamid4321@gmail.com"
+                }
+            ],
+            "description": "Laravel FIB Integration",
+            "keywords": [
+                "FIB",
+                "integration",
+                "laravel-fib-integration"
+            ],
+            "support": {
+                "issues": "https://github.com/rawahamid/laravel-fib-integration/issues",
+                "source": "https://github.com/rawahamid/laravel-fib-integration/tree/v1.0.3"
+            },
+            "time": "2024-08-13T07:41:41+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",

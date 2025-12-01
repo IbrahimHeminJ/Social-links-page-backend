@@ -20,5 +20,8 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/user/{id}/button-links', 'getButtonLinks');
 });
 
+// FIB Payment Callback (public route, no auth required)
+Route::post('/payments/callback', [\App\Http\Controllers\API\User\PaymentController::class, 'callback']);
+
 require __DIR__.'/roles/admin/admin.php';
 require __DIR__.'/roles/user/user.php';

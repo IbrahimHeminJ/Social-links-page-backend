@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\User\PaymentController;
 use App\Http\Controllers\API\User\ReportController;
 use App\Http\Controllers\API\User\LinkController;
 use App\Http\Controllers\API\User\ThemeController;
@@ -21,4 +22,14 @@ Route::middleware(['auth:sanctum', 'expaired_date', 'role:user,admin'])->prefix(
         Route::delete('/', 'destroy');
     });
     Route::post('/report', [ReportController::class, 'store']);
+    
+    // Payment routes
+    Route::controller(PaymentController::class)->prefix('payments')->name('payments.')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'create');
+        Route::get('/status/{paymentId}', 'status');
+        Route::post('/cancel/{paymentId}', 'cancel');
+        Route::post('/refund/{paymentId}', 'refund');
+        Route::get('/{id}', 'show');
+    });
 });
