@@ -32,6 +32,7 @@ class userUpdateRequest extends FormRequest
             'tags' => 'required|array',
             'tags.*' => 'exists:tags,id',
             'password' => 'nullable|confirmed|string|min:8',
+            'premium' => 'nullable|boolean',
         ];
     }
 }

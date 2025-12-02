@@ -29,6 +29,7 @@ class UserReasource extends JsonResource
                     $request->route()->getName() === 'auth.user',
                     $this->role,
                 ),
+                'premium' => $this->premium,
                 'theme' => $this->when(
                     $this->userPage,
                     new ThemeResource($this->userPage->load('themePreset'))

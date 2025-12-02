@@ -198,11 +198,21 @@ class PaymentController extends Controller
                 $payments->map(function ($payment) {
                     return [
                         'id' => $payment->id,
+                        'user_id' => $payment->user_id,
                         'payment_id' => $payment->payment_id,
+                        'readable_code' => $payment->readable_code,
+                        'qr_code' => $payment->qr_code,
+                        'valid_until' => $payment->valid_until ? $payment->valid_until->format('c') : null,
+                        'personal_app_link' => $payment->personal_app_link,
+                        'business_app_link' => $payment->business_app_link,
+                        'corporate_app_link' => $payment->corporate_app_link,
                         'amount' => (float) $payment->amount,
                         'currency' => $payment->currency,
                         'status' => $payment->status,
-                        'valid_until' => $payment->valid_until ? $payment->valid_until->format('c') : null,
+                        'declining_reason' => $payment->declining_reason,
+                        'declined_at' => $payment->declined_at ? $payment->declined_at->format('c') : null,
+                        'paid_by_name' => $payment->paid_by_name,
+                        'paid_by_iban' => $payment->paid_by_iban,
                         'created_at' => $payment->created_at->format('c'),
                         'updated_at' => $payment->updated_at->format('c'),
                     ];

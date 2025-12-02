@@ -32,6 +32,7 @@ class userStoreRequest extends FormRequest
             'tags.*' => 'exists:tags,id',
             'role' => 'required|string|in:admin,user',
             'is_deleted' => 'required|boolean',
+            'premium' => 'nullable|boolean',
         ];
     }
 }

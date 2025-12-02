@@ -30,6 +30,7 @@ class User extends Authenticatable
         'phone_no',
         'role',
         'is_deleted',
+        'premium',
     ];
 
     /**
@@ -50,7 +51,8 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'is_deleted' => 'boolean', 
+            'is_deleted' => 'boolean',
+            'premium' => 'boolean',
         ];
     }
 

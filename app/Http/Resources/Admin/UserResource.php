@@ -26,6 +26,7 @@ class UserResource extends JsonResource
                 'phone_no' => $this->phone_no,
                 'tags' => TagReasource::collection($this->tags),
                 'role' => $this->role,
+                'premium' => $this->premium,
             ],
         ];
     }
