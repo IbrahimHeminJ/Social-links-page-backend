@@ -29,7 +29,6 @@ Route::middleware(['auth:sanctum', 'expaired_date', 'role:user,admin'])->prefix(
         Route::post('/', 'create');
         Route::get('/status/{paymentId}', 'status');
         Route::post('/cancel/{paymentId}', 'cancel');
-        Route::post('/refund/{paymentId}', 'refund');
         Route::get('/{id}', 'show');
     });
 });

@@ -23,10 +23,9 @@ return new class extends Migration
             $table->string('corporate_app_link')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('currency', 3)->default('IQD');
-            $table->string('status')->default('UNPAID'); // PAID, UNPAID, DECLINED, REFUND_REQUESTED, REFUNDED
+            $table->string('status')->default('UNPAID'); // PAID, UNPAID, DECLINED
             $table->string('declining_reason')->nullable(); // SERVER_FAILURE, PAYMENT_EXPIRATION, PAYMENT_CANCELLATION
             $table->timestamp('declined_at')->nullable();
-            $table->timestamp('paid_at')->nullable();
             $table->string('paid_by_name')->nullable();
             $table->string('paid_by_iban')->nullable();
             $table->timestamps();

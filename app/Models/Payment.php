@@ -24,7 +24,6 @@ class Payment extends Model
         'status',
         'declining_reason',
         'declined_at',
-        'paid_at',
         'paid_by_name',
         'paid_by_iban',
     ];
@@ -32,7 +31,6 @@ class Payment extends Model
     protected $casts = [
         'valid_until' => 'datetime',
         'declined_at' => 'datetime',
-        'paid_at' => 'datetime',
         'amount' => 'decimal:2',
     ];
 

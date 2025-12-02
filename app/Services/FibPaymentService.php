@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -29,29 +28,9 @@ class FibPaymentService
 
         $this->baseUrl = $baseUrls[$this->environment] ?? $baseUrls['stage'];
 
-        // Load token from cache or authenticate
-        $this->loadToken();
+        $this->authenticate();
     }
 
-    /**
-     * Load token from cache or authenticate if not available
-     */
-    protected function loadToken()
-    {
-        $cacheKey = "fib_access_token_{$this->environment}";
-        
-        // Try to get token from cache
-        $this->accessToken = Cache::get($cacheKey);
-        
-        // If no cached token, authenticate
-        if (!$this->accessToken) {
-            $this->authenticate();
-        }
-    }
-
-    /**
-     * Authenticate with FIB and cache the token
-     */
     protected function authenticate()
     {
         try {
@@ -64,21 +43,7 @@ class FibPaymentService
                 ]);
 
             if ($response->successful()) {
-                $tokenData = $response->json();
-                $this->accessToken = $tokenData['access_token'];
-                
-                // Cache the token (typically expires in 3600 seconds / 1 hour)
-                // Cache for 50 minutes to be safe (3000 seconds)
-                $expiresIn = $tokenData['expires_in'] ?? 3600;
-                $cacheTime = max(300, $expiresIn - 300); // Cache for at least 5 minutes, or expires_in - 5 minutes
-                
-                $cacheKey = "fib_access_token_{$this->environment}";
-                Cache::put($cacheKey, $this->accessToken, now()->addSeconds($cacheTime));
-                
-                Log::info('FIB token cached', [
-                    'expires_in' => $expiresIn,
-                    'cached_for' => $cacheTime,
-                ]);
+                $this->accessToken = $response->json()['access_token'];
             } else {
                 Log::error('FIB Authentication failed', [
                     'status' => $response->status(),
@@ -111,10 +76,8 @@ class FibPaymentService
                     'description' => $description,
                 ]);
 
-            // If unauthorized, clear cache and try to re-authenticate
+            // If unauthorized, try to re-authenticate
             if ($response->status() === 401) {
-                $cacheKey = "fib_access_token_{$this->environment}";
-                Cache::forget($cacheKey);
                 $this->authenticate();
                 $response = Http::withoutVerifying()
                     ->withToken($this->accessToken)
@@ -155,10 +118,8 @@ class FibPaymentService
                 ->withToken($this->accessToken)
                 ->get("{$this->baseUrl}/protected/v1/payments/{$paymentId}/status");
 
-            // If unauthorized, clear cache and try to re-authenticate
+            // If unauthorized, try to re-authenticate
             if ($response->status() === 401) {
-                $cacheKey = "fib_access_token_{$this->environment}";
-                Cache::forget($cacheKey);
                 $this->authenticate();
                 $response = Http::withoutVerifying()
                     ->withToken($this->accessToken)
@@ -192,10 +153,8 @@ class FibPaymentService
                 ->withToken($this->accessToken)
                 ->post("{$this->baseUrl}/protected/v1/payments/{$paymentId}/cancel");
 
-            // If unauthorized, clear cache and try to re-authenticate
+            // If unauthorized, try to re-authenticate
             if ($response->status() === 401) {
-                $cacheKey = "fib_access_token_{$this->environment}";
-                Cache::forget($cacheKey);
                 $this->authenticate();
                 $response = Http::withoutVerifying()
                     ->withToken($this->accessToken)
@@ -213,44 +172,6 @@ class FibPaymentService
             }
         } catch (\Exception $e) {
             Log::error('FIB Payment cancellation error', ['error' => $e->getMessage()]);
-            throw $e;
-        }
-    }
-
-    public function refund($paymentId)
-    {
-        try {
-            // Ensure we have a valid token
-            if (!$this->accessToken) {
-                $this->authenticate();
-            }
-
-            $response = Http::withoutVerifying() // Disable SSL verification
-                ->withToken($this->accessToken)
-                ->post("{$this->baseUrl}/protected/v1/payments/{$paymentId}/refund");
-
-            // If unauthorized, clear cache and try to re-authenticate
-            if ($response->status() === 401) {
-                $cacheKey = "fib_access_token_{$this->environment}";
-                Cache::forget($cacheKey);
-                $this->authenticate();
-                $response = Http::withoutVerifying()
-                    ->withToken($this->accessToken)
-                    ->post("{$this->baseUrl}/protected/v1/payments/{$paymentId}/refund");
-            }
-
-            // Refund returns 202 Accepted
-            if ($response->status() === 202) {
-                return true;
-            } else {
-                Log::error('FIB Payment refund failed', [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                ]);
-                throw new \Exception('Failed to refund payment: ' . $response->body());
-            }
-        } catch (\Exception $e) {
-            Log::error('FIB Payment refund error', ['error' => $e->getMessage()]);
             throw $e;
         }
     }

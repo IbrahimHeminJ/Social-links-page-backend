@@ -92,7 +92,6 @@ class PaymentController extends Controller
             $payment->update([
                 'status' => $response['status'],
                 'valid_until' => isset($response['validUntil']) ? Carbon::parse($response['validUntil']) : null,
-                'paidAt' => isset($response['paidAt']) ? Carbon::parse($response['paidAt']) : null,
                 'amount' => $response['amount']['amount'] ?? $payment->amount,
                 'currency' => $response['amount']['currency'] ?? $payment->currency,
                 'declining_reason' => $response['decliningReason'] ?? null,
@@ -107,7 +106,6 @@ class PaymentController extends Controller
                     'payment_id' => $payment->payment_id,
                     'status' => $payment->status,
                     'valid_until' => $payment->valid_until ? $payment->valid_until->format('c') : null,
-                    'paid_at' => $payment->paid_at ? $payment->paid_at->format('c') : null,
                     'amount' => [
                         'amount' => (float) $payment->amount,
                         'currency' => $payment->currency,
@@ -247,7 +245,6 @@ class PaymentController extends Controller
                     'amount' => (float) $payment->amount,
                     'currency' => $payment->currency,
                     'status' => $payment->status,
-                    'paid_at' => $payment->paid_at ? $payment->paid_at->format('c') : null,
                     'declining_reason' => $payment->declining_reason,
                     'declined_at' => $payment->declined_at ? $payment->declined_at->format('c') : null,
                     'paid_by' => $payment->paid_by_name ? [
@@ -275,59 +272,6 @@ class PaymentController extends Controller
     }
 
     /**
-     * Refund a payment
-     * Only payments with PAID status that were paid in the last 24 hours can be refunded
-     */
-    public function refund($paymentId)
-    {
-        try {
-            $payment = Payment::where('payment_id', $paymentId)
-                ->where('user_id', auth()->id())
-                ->firstOrFail();
-
-            // Check if payment is PAID
-            if ($payment->status !== 'PAID') {
-                return $this->error('Only paid payments can be refunded', 422);
-            }
-
-            // Check if payment was paid within last 24 hours
-            if (!$payment->paid_at || $payment->paid_at->lt(now()->subHours(24))) {
-                return $this->error('Only payments paid within the last 24 hours can be refunded', 422);
-            }
-
-            // Refund payment via FIB (using service with SSL verification disabled)
-            $this->fibService->refund($paymentId);
-
-            // Update payment status (will be REFUND_REQUESTED initially, then REFUNDED)
-            // We'll update it to REFUND_REQUESTED, and the status check will update it to REFUNDED later
-            $payment->update([
-                'status' => 'REFUND_REQUESTED',
-            ]);
-
-            return $this->success(
-                'Refund request submitted successfully. Payment status will be updated shortly.',
-                [
-                    'payment_id' => $payment->payment_id,
-                    'status' => $payment->status,
-                ],
-                202
-            );
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->error('Payment not found', 404);
-        } catch (\Exception $e) {
-            Log::error('Payment refund failed', [
-                'payment_id' => $paymentId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return $this->error(
-                'Failed to refund payment: ' . $e->getMessage(),
-                500
-            );
-        }
-    }
-
-    /**
      * Handle FIB payment callback
      * This is a public route that FIB will call when payment status changes
      */
@@ -336,7 +280,7 @@ class PaymentController extends Controller
         try {
             $request->validate([
                 'id' => 'required|string',
-                'status' => 'required|string|in:PAID,UNPAID,DECLINED,REFUND_REQUESTED,REFUNDED',
+                'status' => 'required|string|in:PAID,UNPAID,DECLINED',
             ]);
 
             $paymentId = $request->input('id');
